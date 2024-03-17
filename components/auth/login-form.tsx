@@ -9,6 +9,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { useSearchParams } from "next/navigation";
 
 import * as z from "zod";
 import { LoginSchema } from "@/schemas";
@@ -23,6 +24,12 @@ import { login } from "@/actions/login";
 import { useState, useTransition } from "react";
 
 export const LoginForm = () => {
+  const searchParams = useSearchParams();
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Email already use in with different provider"
+      : "";
+
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -36,16 +43,14 @@ export const LoginForm = () => {
   });
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    setError("")
-    setSuccess("")
-    
-    
+    setError("");
+    setSuccess("");
+
     startTransition(() => {
-      login(values)
-      .then((data) => {
-        setError(data.error)
-        setSuccess(data.success)
-      })
+      login(values).then((data) => {
+        setError(data?.error);
+        setSuccess(data?.success);
+      });
     });
   };
 
@@ -96,8 +101,8 @@ export const LoginForm = () => {
               )}
             />
           </div>
-          <FormError message={error} />
-          <FormSuccess message= {success} />
+          <FormError message={error || urlError} />
+          <FormSuccess message={success} />
           <Button disabled={isPending} type="submit" className="w-full">
             Login
           </Button>
