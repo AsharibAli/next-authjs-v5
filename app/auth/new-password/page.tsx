@@ -1,12 +1,9 @@
-import { NewPasswordForm } from "@/components/auth/new-password-token";
-import React from "react";
+import { NewPasswordForm } from "@/components/auth/new-password-form";
 
 const NewPasswordPage = () => {
-  return (
-    <div>
-      <NewPasswordForm />
-    </div>
-  );
-};
-
+  return ( 
+    <NewPasswordForm />
+   );
+}
+ 
 export default NewPasswordPage;
