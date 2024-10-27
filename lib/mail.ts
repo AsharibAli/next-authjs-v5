@@ -1,12 +1,17 @@
-import { Resend } from "resend";
+import formData from "form-data";
+import Mailgun from "mailgun.js";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const mailgun = new Mailgun(formData);
+const mg = mailgun.client({
+  username: "api",
+  key: process.env.MAILGUN_API_KEY,
+});
 
 const domain = process.env.NEXT_PUBLIC_APP_URL;
 
 export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
-  await resend.emails.send({
-    from: "mail@.asharib.xyz",
+  await mg.messages.create(process.env.MAILGUN_DOMAIN, {
+    from: "mail@asharib.xyz",
     to: email,
     subject: "2FA Code",
     html: `<p>Your 2FA code: ${token}</p>`,
@@ -16,7 +21,7 @@ export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
 export const sendPasswordResetEmail = async (email: string, token: string) => {
   const resetLink = `${domain}/auth/new-password?token=${token}`;
 
-  await resend.emails.send({
+  await mg.messages.create(process.env.MAILGUN_DOMAIN, {
     from: "mail@asharib.xyz",
     to: email,
     subject: "Reset your password",
@@ -27,7 +32,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
 export const sendVerificationEmail = async (email: string, token: string) => {
   const confirmLink = `${domain}/auth/new-verification?token=${token}`;
 
-  await resend.emails.send({
+  await mg.messages.create(process.env.MAILGUN_DOMAIN, {
     from: "mail@asharib.xyz",
     to: email,
     subject: "Confirm your email",
